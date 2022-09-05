@@ -1,11 +1,13 @@
-package site.metacoding.red.domain.boards.mapper;
+package site.metacoding.red.web.dto.response.boards;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @Setter
 @Getter
-public class MainView {//뷰를위한 데이터
+public class MainDto {
 	private Integer id;
 	private String title;
 	private String username;
