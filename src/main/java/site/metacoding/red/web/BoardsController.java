@@ -38,10 +38,18 @@ public class BoardsController {
 		return "redirect:/";// 메인페이지로 리턴, 본코드
 	}
 
-
-	@GetMapping({ "/", "/boards" })//글전체목록보기
-	public String getBoardList(Model model) {
-		List<MainDto>boardsList = boardsDao.findAll();
+	
+	//http://locathost:8000/
+	//http://localhost:8000/?page=0
+	@GetMapping({ "/", "/boards"})//글전체목록보기
+	public String getBoardList(Model model, Integer page) {//0->, 1->10, 2->20
+		if(page == null)page = 0;
+		System.out.println("==============");
+		System.out.println("page: "+page);
+		System.out.println("==============");
+		
+		int startNum = page * 10;
+		List<MainDto>boardsList = boardsDao.findAll(startNum);
 		model.addAttribute("boardsList",boardsList);
 		return "boards/main";
 	}
