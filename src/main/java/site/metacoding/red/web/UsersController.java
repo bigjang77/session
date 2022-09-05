@@ -32,7 +32,7 @@ public class UsersController {
 	public String login(LoginDto loginDto) {
 		Users usersPS = usersDao.login(loginDto);
 		if (usersPS != null) {// 인증됨
-			session.setAttribute("principal", usersPS);//principal = 인증된유저
+			session.setAttribute("principal", usersPS);//principal = 인증된유저(일반적인 약속)
 			return "redirect:/";
 		} else {// 인증안됨
 			return "redirect:/loginForm";
@@ -42,7 +42,7 @@ public class UsersController {
 	@PostMapping("/join")
 	public String join(JoinDto joinDto) {
 		usersDao.insert(joinDto);
-		return "redirect:/loginFrom";
+		return "redirect:/loginForm";
 	}
 
 	@GetMapping("/loginForm")
