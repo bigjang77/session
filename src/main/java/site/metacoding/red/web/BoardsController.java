@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import site.metacoding.red.domain.boards.Boards;
 import site.metacoding.red.domain.boards.BoardsDao;
 import site.metacoding.red.domain.users.Users;
+import site.metacoding.red.web.dto.request.boards.UpdateDto;
 import site.metacoding.red.web.dto.request.boards.WriteDto;
 import site.metacoding.red.web.dto.response.boards.MainDto;
 import site.metacoding.red.web.dto.response.boards.PagingDto;
@@ -27,25 +28,74 @@ public class BoardsController {
 	// @PostMapping("/boards/{id}/delete")
 	// @PostMapping("/boards/{id}/update")
 
+	@PostMapping("/boards/{id}/update")
+	public String update(@PathVariable Integer id, UpdateDto updateDto) {
+		// 1. 영속화
+		Boards boardsPS = boardsDao.findById(id);
+		Users principal = (Users) session.getAttribute("principal");
+		// 비정상 요청 체크
+		if (boardsPS == null) {
+			return "errors/badPage";
+		}
+		// 인증 체크
+		if (principal == null) {
+			return "redirect:/loginForm";
+		}
+		// 권한 체크 ( 세션 principal.getId() 와 boardsPS의 userId를 비교)
+		if (principal.getId() != boardsPS.getUsersId()) {
+			return "errors/badPage";
+		}
+
+		// 2. 변경
+		boardsPS.글수정(updateDto);
+
+		// 3. 수행
+		boardsDao.update(boardsPS);
+
+		return "redirect:/boards/"+id;
+	}
+
+	@GetMapping("/boards/{id}/updateForm")
+	public String updateForm(@PathVariable Integer id, Model model) {
+		Boards boardsPS = boardsDao.findById(id);
+		Users principal = (Users) session.getAttribute("principal");
+
+		// 비정상 요청 체크
+		if (boardsPS == null) {
+			return "errors/badPage";
+		}
+		// 인증 체크
+		if (principal == null) {
+			return "redirect:/loginForm";
+		}
+		// 권한 체크 ( 세션 principal.getId() 와 boardsPS의 userId를 비교)
+		if (principal.getId() != boardsPS.getUsersId()) {
+			return "errors/badPage";
+		}
+
+		model.addAttribute("boards", boardsPS);
+
+		return "boards/updateForm";
+	}
+
 	@PostMapping("/boards/{id}/delete") // 글지우기 ,
 	public String deleteBoards(@PathVariable Integer id) {
 		Boards boardsPs = boardsDao.findById(id);// 영속화하는이유 트랜직션때문에
-		//비정상 요청 체크
+		// 비정상 요청 체크, 업는번호 요청막기
 		if (boardsPs == null) { // if는 비정상 로직을 타게해서 걸러내는 필터 역할을 하는게 좋다
-			return "redirect:/boards/" + id;
+			return "errors/badPage";
 		}
 
-		// 인증 체크
 		Users principal = (Users) session.getAttribute("principal");
 		if (principal == null) {
 			return "redirect:/loginForm";
 		}
-		//권한 체크(세션princiapal,getId() 와 boardsPs의 userId를 비교
+		// 권한 체크(세션princiapal,getId() 와 boardsPs의 userId를 비교), 다른로그인사용자의 권한 막기
 		if (principal.getId() != boardsPs.getUsersId()) {
-			return "redirect:/boards/" + id;
+			return "errors/badPage";
 		}
-
-		boardsDao.delete(id);
+		// 공통로직
+		boardsDao.delete(id);// 핵심 로직(기능)
 		return "redirect:/";
 	}
 
