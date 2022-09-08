@@ -18,7 +18,8 @@ public class PagingDto {
 	private boolean isFirst; //true false false ->el에서는 firstst로 찾음
 	private String keyword;
 	
-	public void makeBlockInfo() {
+	public void makeBlockInfo(String keyword) {
+		this.keyword= keyword;
 		this.blockCount = 5;
 		this.currentBlock = currentPage/blockCount;
 		this.startPageNum = 1 + blockCount * currentBlock;
