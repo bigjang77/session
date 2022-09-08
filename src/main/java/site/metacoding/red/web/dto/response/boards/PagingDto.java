@@ -16,6 +16,7 @@ public class PagingDto {
 	private Integer currentPage;// 0 1 2
 	private boolean isLast; //false false true 불리언규칙 is(변수) 너 ~니? getter가 만들어지면 isLast() 이름으로 만들어짐. -> el에서는 last로 찾음
 	private boolean isFirst; //true false false ->el에서는 firstst로 찾음
+	private String keyword;
 	
 	public void makeBlockInfo() {
 		this.blockCount = 5;
